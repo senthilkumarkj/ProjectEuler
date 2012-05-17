@@ -1,17 +1,14 @@
 class Problem35
 
 	@@primes = []
-	@@non_primes = []
 
-	def self.isPrime?(n)
+	def self.prime?(n)
 		if(n<=1)
 			return false
 		elsif n == 2
 			return true
 		elsif @@primes.include?(n)
 			return true
-		elsif @@non_primes.include?(n)
-			return false
 		end
 		i = 2
 		isPrime = true
@@ -20,21 +17,18 @@ class Problem35
 			isPrime = false if n % i == 0
 			i = i + 1
 		end
-		if isPrime
-			@@primes << n 
-		else
-			@@non_primes << n
-		end
+		@@primes << n if isPrime
 		isPrime
 	end
 
-	def self.isCircularPrime?(n)
-		if isPrime?(n)
-			n.to_s.split('').permutation.to_a.each{|x|
-			  if(!isPrime?(x.join().to_i))
-			  	return false
-			  end
-			}
+	def self.circularPrime?(n)
+		n_digits = n.to_s.split('')
+		if (['0','2','4','6','8'] & n_digits).empty? && prime?(n)
+			for i in 1..n_digits.length-1
+				if(!prime?(n_digits.push(n_digits.shift).join.to_i))
+					return false
+				end
+			end
 			return true
 		else
 			return false
@@ -45,9 +39,11 @@ end
 
 count = 1
 i = 3
+
 while i < 1000000
-	count = count+1 if Problem35.isCircularPrime?(i)
-	i = i + 2
+	count = count+1 if Problem35.circularPrime?(i)
 	puts i if (i+1) % 10000 == 0
+	i = i + 2
 end
+
 puts count
